@@ -23,8 +23,14 @@ class MyWindow(QMainWindow, UI_class):
                 sys.exit()
 
         ##res = hts.kiwoom_CommConnect()
-        acct = hts.kiwoom_GetAccList()
-        print(acct)
+        res = hts.kiwoom_GetAccList()
+        print(res)
+        res = hts.GetFutureList()
+        print(res)
+        res = hts.GetMonthList()
+        print(res)
+
+        hts.SetRealReg("1111","209AK220","10;20","0")
 
 
 if __name__ == "__main__":

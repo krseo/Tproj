@@ -97,10 +97,10 @@ class Kiwoom(QAxWidget):
         self.setControl("KHOPENAPI.KHOpenAPICtrl.1")
         self.OnEventConnect.connect(self.kiwoom_OnEventConnect)
         self.OnReceiveTrData.connect(self.kiwoom_OnReceiveTrData)
-        # self.OnReceiveRealData.connect(self.kiwoom_OnReceiveRealData)
-        # self.OnReceiveConditionVer.connect(self.kiwoom_OnReceiveConditionVer)
-        # self.OnReceiveTrCondition.connect(self.kiwoom_OnReceiveTrCondition)
-        # self.OnReceiveRealCondition.connect(self.kiwoom_OnReceiveRealCondition)
+        self.OnReceiveRealData.connect(self.kiwoom_OnReceiveRealData)
+        self.OnReceiveConditionVer.connect(self.kiwoom_OnReceiveConditionVer)
+        self.OnReceiveTrCondition.connect(self.kiwoom_OnReceiveTrCondition)
+        self.OnReceiveRealCondition.connect(self.kiwoom_OnReceiveRealCondition)
         self.OnReceiveChejanData.connect(self.kiwoom_OnReceiveChejanData)
         self.OnReceiveMsg.connect(self.kiwoom_OnReceiveMsg)
 
@@ -514,6 +514,7 @@ class Kiwoom(QAxWidget):
         :param kwargs:
         :return:
         """
+        print("Receive Real Data")
         logger.debug("REAL: %s %s %s" % (sCode, sRealType, sRealData))
 
         if sRealType == "주식체결":

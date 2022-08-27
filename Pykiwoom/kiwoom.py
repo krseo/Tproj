@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QAxContainer import *
- #import pythoncom
+import pythoncom
 import datetime
 import parser
 import real_type
@@ -218,6 +218,7 @@ class Kiwoom:
             rtype (str): 리얼타입 (주식시세, 주식체결, ...)
             data (str): 실시간 데이터 전문
         """
+        print("Enter  get receive real")
         # get real queue index
         index = real_type.real_index.get(rtype)
         fid_list = self.real_fid[rtype]
@@ -461,6 +462,11 @@ class Kiwoom:
             grp = {x.split('|')[1]: x.split('|')[0] for x in tokens}
         return grp
 
+    def GetLoginInfo(self, sTag):
+        data = self.ocx.dynamicCall("GetThemeGroupCode(QString)", sTag)
+        data = data.split(';')
+        return [x[1:] for x in data]
+
     def GetThemeGroupCode(self, theme_code):
         data = self.ocx.dynamicCall("GetThemeGroupCode(QString)", theme_code)
         data = data.split(';')
@@ -469,7 +475,20 @@ class Kiwoom:
     def GetFutureList(self):
         data = self.ocx.dynamicCall("GetFutureList()")
         return data
+    def GetFuturCodeByIndex(self, nIndex):
+        data = self.ocx.dynamicCall("GetFuturCodeByIndex()", nIndex)
+        return data
 
+    def GetActPriceList(self):
+        data = self.ocx.dynamicCall("GetActPriceList()")
+        return data
+    def GetMonthList(self):
+        data = self.ocx.dynamicCall("GetMonthList()")
+        return data
+
+    def GetOptionCode(self, strActPrice, nCp, strMonth):
+        data = self.ocx.dynamicCall("GetMonthList(Qstring,int,Qstring)",strActPrice, nCp, strMonth)
+        return data
     def block_request(self, *args, **kwargs):
         trcode = args[0].lower()
         lines = parser.read_enc(trcode)
@@ -494,7 +513,9 @@ class Kiwoom:
         return self.tr_data
 
     def SetRealReg(self, screen, code_list, fid_list, opt_type):
+
         ret = self.ocx.dynamicCall("SetRealReg(QString, QString, QString, QString)", screen, code_list, fid_list, opt_type)
+        print("Set Real Reg", ret)
         return ret
 
     def SetRealRemove(self, screen, del_code):
