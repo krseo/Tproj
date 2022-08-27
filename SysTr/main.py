@@ -22,7 +22,7 @@ class MyWindow(QMainWindow, UI_class):
                 print("Login failed")
                 sys.exit()
 
-        #res = hts.kiwoom_CommConnect()
+        ##res = hts.kiwoom_CommConnect()
         acct = hts.kiwoom_GetAccList()
         print(acct)
 
