@@ -20,19 +20,19 @@ class Kiwoom:
         self.ocx = QAxWidget("KHOPENAPI.KHOpenAPICtrl.1")
 
         # queues
-        self.tr_dqueue          = tr_dqueue          # tr data queue
-        self.real_dqueues       = real_dqueues       # real data queue list
-        self.tr_cond_dqueue     = tr_cond_dqueue
-        self.real_cond_dqueue   = real_cond_dqueue
-        self.chejan_dqueue      = chejan_dqueue
+        self.tr_dqueue = tr_dqueue  # tr data queue
+        self.real_dqueues = real_dqueues  # real data queue list
+        self.tr_cond_dqueue = tr_cond_dqueue
+        self.real_cond_dqueue = real_cond_dqueue
+        self.chejan_dqueue = chejan_dqueue
 
-        self.connected          = False              # for login event
-        self.received           = False              # for tr event
-        self.tr_items           = None               # tr input/output items
-        self.tr_data            = None               # tr output data
-        self.tr_record          = None
-        self.tr_remained        = False
-        self.condition_loaded   = False
+        self.connected = False  # for login event
+        self.received = False  # for tr event
+        self.tr_items = None  # tr input/output items
+        self.tr_data = None  # tr output data
+        self.tr_record = None
+        self.tr_remained = False
+        self.condition_loaded = False
 
         self._set_signals_slots()
 
@@ -70,9 +70,9 @@ class Kiwoom:
         if login:
             self.CommConnect()
 
-    #-------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------------------------------------------
     # callback functions
-    #-------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------------------------------------------
     def OnEventConnect(self, err_code):
         """Login Event
 
@@ -116,7 +116,7 @@ class Kiwoom:
         # legacy interface
         codes = code_list.split(';')[:-1]
         self.tr_condition_data = codes
-        self.tr_condition_loaded= True
+        self.tr_condition_loaded = True
 
         # queue
         if self.tr_cond_dqueue is not None:
@@ -147,7 +147,7 @@ class Kiwoom:
         return df
 
     def OnReceiveTrData(self, screen, rqname, trcode, record, next):
-        #print(screen, rqname, trcode, record, next)
+        # print(screen, rqname, trcode, record, next)
         if self.tr_dqueue is not None:
             items = self.tr_output[trcode]
             data = self.get_data(trcode, rqname, items)
@@ -206,7 +206,7 @@ class Kiwoom:
             output = {'gubun': gubun}
             for fid in fid_list.split(';'):
                 data = self.GetChejanData(fid)
-                output[fid]=data
+                output[fid] = data
 
             self.chejan_dqueue.put(output)
 
@@ -242,9 +242,9 @@ class Kiwoom:
         self.ocx.OnReceiveTrCondition.connect(self.OnReceiveTrCondition)
         self.ocx.OnReceiveConditionVer.connect(self.OnReceiveConditionVer)
 
-    #-------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------------------------------------------
     # OpenAPI+ 메서드
-    #-------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------------------------------------------
     def CommConnect(self, block=True):
         """
         로그인 윈도우를 실행합니다.
@@ -341,7 +341,8 @@ class Kiwoom:
         :param screen: 화면번호
         :return:
         """
-        ret = self.ocx.dynamicCall("CommKwRqData(QString, bool, int, int, QString, QString)", arr_code, next, code_count, type, rqname, screen);
+        ret = self.ocx.dynamicCall("CommKwRqData(QString, bool, int, int, QString, QString)", arr_code, next,
+                                   code_count, type, rqname, screen);
         return ret
 
     def GetAPIModulePath(self):
@@ -447,6 +448,7 @@ class Kiwoom:
 
     def GetCommRealData(self, code, fid):
         data = self.ocx.dynamicCall("GetCommRealData(QString, int)", code, fid)
+        print("GetCommRealData:", data)
         return data
 
     def GetChejanData(self, fid):
@@ -457,7 +459,7 @@ class Kiwoom:
         data = self.ocx.dynamicCall("GetThemeGroupList(int)", type)
         tokens = data.split(';')
         if type == 0:
-            grp = {x.split('|')[0]:x.split('|')[1] for x in tokens}
+            grp = {x.split('|')[0]: x.split('|')[1] for x in tokens}
         else:
             grp = {x.split('|')[1]: x.split('|')[0] for x in tokens}
         return grp
@@ -475,6 +477,7 @@ class Kiwoom:
     def GetFutureList(self):
         data = self.ocx.dynamicCall("GetFutureList()")
         return data
+
     def GetFuturCodeByIndex(self, nIndex):
         data = self.ocx.dynamicCall("GetFuturCodeByIndex()", nIndex)
         return data
@@ -482,13 +485,27 @@ class Kiwoom:
     def GetActPriceList(self):
         data = self.ocx.dynamicCall("GetActPriceList()")
         return data
+
+    #----32 GetMonthList
     def GetMonthList(self):
         data = self.ocx.dynamicCall("GetMonthList()")
         return data
 
+    # ----33 GetOptionCode
     def GetOptionCode(self, strActPrice, nCp, strMonth):
-        data = self.ocx.dynamicCall("GetMonthList(Qstring,int,Qstring)",strActPrice, nCp, strMonth)
+        data = self.ocx.dynamicCall("GetMonthList(Qstring,int,Qstring)", strActPrice, nCp, strMonth)
         return data
+
+    # ----34 GetOptionCodeByMonth
+    def GetOptionCodeByMonth(self, strCode, nCp, strMonth):
+        data = self.ocx.dynamicCall("GetOptionCodeByMonth(Qstring,int,Qstring)", strCode, nCp, strMonth)
+        return data
+
+    # ----35 GetOptionCodeByActPrice
+    def GetOptionCodeByActPrice(self, strCode, nCp, Tick):
+        data = self.ocx.dynamicCall("GetOptionCodeByMonth(Qstring,int,int)", strCode, nCp, Tick)
+        return data
+
     def block_request(self, *args, **kwargs):
         trcode = args[0].lower()
         lines = parser.read_enc(trcode)
@@ -514,8 +531,9 @@ class Kiwoom:
 
     def SetRealReg(self, screen, code_list, fid_list, opt_type):
 
-        ret = self.ocx.dynamicCall("SetRealReg(QString, QString, QString, QString)", screen, code_list, fid_list, opt_type)
-        print("Set Real Reg", ret)
+        ret = self.ocx.dynamicCall("SetRealReg(QString, QString, QString, QString)", screen, code_list, fid_list,
+                                   opt_type)
+        # print("Set Real Reg", ret)
         return ret
 
     def SetRealRemove(self, screen, del_code):
@@ -567,7 +585,6 @@ class Kiwoom:
         if block is True:
             return self.tr_condition_data
 
-
     def SendConditionStop(self, screen, cond_name, index):
         self.ocx.dynamicCall("SendConditionStop(QString, QString, int)", screen, cond_name, index)
 
@@ -576,10 +593,8 @@ class Kiwoom:
         return data
 
 
-
 if not QApplication.instance():
     app = QApplication(sys.argv)
-
 
 if __name__ == "__main__":
     pass
